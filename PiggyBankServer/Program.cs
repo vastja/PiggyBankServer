@@ -1,27 +1,12 @@
-﻿using piggy_bank_server.Services;
+﻿using Microsoft.EntityFrameworkCore;
+using piggy_bank_server.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: "Development",
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:4200");
-            policy.WithMethods("*");
-        });
-});
-// Add services to the container.
-
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddSingleton<IExpenses, Expenses>();
+ConfigureServices(builder.Services, builder.Configuration);
 
 var app = builder.Build();
+CreateDbIfNotExists(app);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -37,4 +22,47 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+{
+    services.AddDbContext<ExpensesContext>(options =>
+        options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+    services.AddDatabaseDeveloperPageExceptionFilter();
+
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy(name: "Development",
+            policy =>
+            {
+                policy.WithOrigins("http://localhost:4200");
+                policy.WithMethods("*");
+            });
+    });
+    // Add services to the container.
+
+
+    builder.Services.AddControllers();
+    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen();
+}
+
+void CreateDbIfNotExists(IHost host)
+{
+    using (var scope = host.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        try
+        {
+            var context = services.GetRequiredService<ExpensesContext>();
+            DbInitializer.Initialize(context);
+        }
+        catch (Exception ex)
+        {
+            var logger = services.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "An error occurred creating the DB.");
+        }
+    }
+}
+
 
