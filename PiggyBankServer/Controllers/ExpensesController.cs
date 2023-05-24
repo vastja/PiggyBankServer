@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using piggy_bank_server.Data;
 
 namespace piggy_bank_server.Controllers;
@@ -14,10 +15,36 @@ public class ExpensesController : ControllerBase
         _expenses = expenses;
     }
 
-    [HttpGet(Name = "GetExpenses")]
-    public IEnumerable<Expense> Get()
+    [HttpGet]
+    public IEnumerable<Expense> GetExpenses()
     {
         return _expenses.Expenses;
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<Expense>> CreateExpense([FromBody] Expense expense)
+    {
+        _expenses.Expenses.Remove(expense);
+        await _expenses.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(Expense), new { id = expense.Id }, expense);
+    }
+
+    [HttpDelete]
+    public async Task<ActionResult<Expense>> DeleteExpense(int id)
+    {
+
+        Expense? expense = _expenses.Expenses.Where(e => e.Id == id).FirstOrDefault();
+        if (expense is not null)
+        {
+            _expenses.Expenses.Remove(expense);
+            await _expenses.SaveChangesAsync();
+
+            return expense;
+        }
+
+        return new NotFoundResult();
+
     }
 }
 

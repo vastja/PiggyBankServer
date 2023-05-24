@@ -35,7 +35,8 @@ void ConfigureServices(IServiceCollection services, IConfiguration configuration
             policy =>
             {
                 policy.WithOrigins("http://localhost:4200");
-                policy.WithMethods("*");
+                policy.AllowAnyMethod();
+                policy.AllowAnyHeader();
             });
     });
     // Add services to the container.
