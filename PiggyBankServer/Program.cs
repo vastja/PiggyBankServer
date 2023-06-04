@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using piggy_bank_server.Data;
+using PiggyBankServer.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 

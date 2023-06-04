@@ -1,7 +1,7 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
 
-namespace piggy_bank_server;
+namespace PiggyBankServer;
 
 public class Expense
 {

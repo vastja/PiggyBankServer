@@ -1,4 +1,4 @@
-﻿namespace piggy_bank_server.Data
+﻿namespace PiggyBankServer.Data
 {
     public static class DbInitializer
     {

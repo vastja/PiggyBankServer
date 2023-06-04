@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace piggy_bank_server.Data
+namespace PiggyBankServer.Data
 {
 	public class ExpensesContext : DbContext
 	{
