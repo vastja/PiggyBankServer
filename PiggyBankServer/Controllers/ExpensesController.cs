@@ -24,13 +24,13 @@ public class ExpensesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Expense>> CreateExpense([FromBody] Expense expense)
     {
-        _expenses.Expenses.Remove(expense);
+        _expenses.Expenses.Add(expense);
         await _expenses.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(Expense), new { id = expense.Id }, expense);
+        return CreatedAtAction(nameof(GetExpenses), new { id = expense.Id }, expense);
     }
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     public async Task<ActionResult<Expense>> DeleteExpense(int id)
     {
 
