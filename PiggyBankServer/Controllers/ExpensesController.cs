@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using piggy_bank_server.Data;
+using PiggyBankServer.Data;
 
-namespace piggy_bank_server.Controllers;
+namespace PiggyBankServer.Controllers;
 
 [ApiController]
 [Route("[controller]")]
