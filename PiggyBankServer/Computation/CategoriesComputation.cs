@@ -29,7 +29,6 @@ namespace PiggyBankServer.Computation
         {
             Dictionary<string, decimal> categories = new();
 
-            decimal total = 0;
             foreach (var expense in expenses)
             {
                 if (categories.TryGetValue(expense.Tag, out decimal sum))
@@ -40,7 +39,6 @@ namespace PiggyBankServer.Computation
                 {
                     categories.Add(expense.Tag, expense.Amount);
                 }
-                total += expense.Amount;
             }
 
             return categories;
