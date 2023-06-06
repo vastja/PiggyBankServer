@@ -16,8 +16,13 @@ public class ExpensesController : ControllerBase
     }
 
     [HttpGet]
-    public IEnumerable<Expense> GetExpenses()
+    public IEnumerable<Expense> GetExpenses(string? tag)
     {
+        if (tag is not null)
+        {
+            return _expenses.Expenses.Where(e => e.Tag == tag);
+        }
+
         return _expenses.Expenses;
     }
 
