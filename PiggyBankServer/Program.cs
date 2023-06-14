@@ -27,6 +27,9 @@ void ConfigureServices(IServiceCollection services, IConfiguration configuration
 {
     services.AddDbContext<ExpensesContext>(options =>
         options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+    services.AddDbContext<IncomeContext>(options =>
+        options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+
     services.AddDatabaseDeveloperPageExceptionFilter();
 
     builder.Services.AddCors(options =>
@@ -55,8 +58,9 @@ void CreateDbIfNotExists(IHost host)
         var services = scope.ServiceProvider;
         try
         {
-            var context = services.GetRequiredService<ExpensesContext>();
-            DbInitializer.Initialize(context);
+            var expenseContext = services.GetRequiredService<ExpensesContext>();
+            var incomeContext = services.GetRequiredService<IncomeContext>();
+            DbInitializer.Initialize(expenseContext, incomeContext);
         }
         catch (Exception ex)
         {
