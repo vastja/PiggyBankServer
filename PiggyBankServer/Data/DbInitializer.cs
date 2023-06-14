@@ -1,51 +1,65 @@
-﻿namespace PiggyBankServer.Data
-{
-    public static class DbInitializer
-    {
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
+using PigyBankServer.Models;
 
-        public static IEnumerable<Expense> Expenses => new[]
-        {
+namespace PiggyBankServer.Data;
+public static class DbInitializer
+{
+
+    public static IEnumerable<Expense> Expenses => new[]
+    {
             new Expense()
             {
-                Id = 0,
                 Tag = "Food",
                 Amount = 120,
             },
             new Expense()
             {
-                Id = 1,
                 Tag = "Travel",
                 Amount = 72,
             },
             new Expense()
             {
-                Id = 2,
                 Tag = "Entertainment",
                 Amount = 100,
             },
         };
 
-        public static void Initialize(ExpensesContext context)
-        {
-            context.Database.EnsureCreated();
-
-            if (HasBeenSeed(context))
+    public static IEnumerable<Income> Incomes => new[]
+    {
+            new Income()
             {
-                return;
+                Tag = "Salary",
+                Amount = 1000,
             }
+        };
 
-            foreach (var expense in Expenses)
-            {
-                context.Add(expense);
-            }
+    public static void Initialize(ExpensesContext expenseContext, IncomeContext incomeContext)
+    {
+        incomeContext.Database.EnsureCreated();
+        var databaseCreator = expenseContext.GetService<IRelationalDatabaseCreator>();
+        databaseCreator.CreateTables();
 
-            context.SaveChanges();
-        }
-
-        public static bool HasBeenSeed(ExpensesContext context)
-        {
-            return context.Expenses.Any();
-        }
+        Initialize(expenseContext, Expenses, (context) => context.Expenses.Any());
+        Initialize(incomeContext, Incomes, (context) => context.Incomes.Any());
     }
+
+    public static void Initialize<T, K>(T context, IEnumerable<K> data, Predicate<T> hasBeenSeed) where T : DbContext
+    {
+        if (hasBeenSeed(context))
+        {
+            return;
+        }
+
+        foreach (var item in data)
+        {
+            context.Add(item);
+        }
+
+        context.SaveChanges();
+    }
+
 }
 
